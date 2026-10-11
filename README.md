@@ -39,3 +39,13 @@ WRF is a source-led world atlas foundation. Its rule is **“No source, no verif
 - Test anonymous reads, submitter permissions, reviewer self-review prevention, reject/request-evidence notes, audit records, and role isolation against the actual database.
 - The current automated checks are static security/configuration tests; they do not replace PostgreSQL integration tests, browser click-through, or production verification.
 - Founder/Admin review UI and the complete interactive map/comparison/data catalogue remain incomplete.
+
+
+## Founder portal (initial UI foundation)
+
+- Open `/founder` on the deployed site to reach the staff sign-in screen.
+- Sign-in uses Supabase Auth. The portal reads the authenticated user's existing WRF role from `wrf_user_roles`; it never creates or assigns privileged roles in the browser.
+- Founder/admin sessions can view recent audit events if the migration and database policies are active. Authorized staff can review queued values through the protected `wrf_review_value` RPC.
+- The dashboard displays counts from database queries. If a query fails or configuration is missing, the UI reports unavailable/configuration status rather than inventing values.
+- The AI Developer card is only an integration placeholder. No AI provider, repository-editing agent, sandbox, or deployment approval workflow is connected.
+- The portal has not yet been end-to-end tested against the actual Supabase project. Do not treat the UI being deployed as proof that database auth, review actions, or RLS have passed live verification.
