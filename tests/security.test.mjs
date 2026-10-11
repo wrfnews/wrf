@@ -63,3 +63,13 @@ test('deployment configs build the static Vite site with baseline security heade
   assert.ok(html.includes('/wrf-mark.svg'));
   assert.ok(!html.includes('worldrevealedfact.example'));
 });
+
+test('first Founder bootstrap is manual and cannot promote the first signup automatically', async () => {
+  const bootstrap = await readFile(new URL('../supabase/bootstrap/001_first_founder.sql', import.meta.url), 'utf8');
+  assert.ok(bootstrap.includes('REPLACE_WITH_EXACT_FOUNDER_EMAIL'));
+  assert.ok(bootstrap.includes('No Supabase Auth user found for the specified email'));
+  assert.ok(bootstrap.includes('This account already has WRF role'));
+  assert.ok(bootstrap.includes("values (founder_user_id, 'founder', founder_user_id)"));
+  assert.ok(bootstrap.includes('founder.bootstrap_completed'));
+  assert.ok(!bootstrap.toLowerCase().includes('on_auth_user_created'));
+});
