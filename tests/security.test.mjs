@@ -97,5 +97,5 @@ test('Founder dashboard reports missing configuration honestly and does not fabr
   assert.ok(founder.includes('Database not configured'));
   assert.ok(founder.includes('Not configured'));
   assert.ok(founder.includes('metrics.countries === null ? \'Unavailable\''));
-  assert.ok(founder.includes('provider routing, repository analysis, sandboxed builds, and deployment approval are not connected yet.'));
+  assert.ok(founder.includes('Provider routing, repository analysis, sandboxed builds, and deployment approval are not connected yet.'));
 });
