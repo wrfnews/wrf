@@ -99,3 +99,10 @@ test('Founder dashboard reports missing configuration honestly and does not fabr
   assert.ok(founder.includes('metrics.countries === null ? \'Unavailable\''));
   assert.ok(founder.includes('Provider routing, repository analysis, sandboxed builds, and deployment approval are not connected yet.'));
 });
+
+test('direct Founder route falls back to the single-page application shell', async () => {
+  const vercel = await readFile(new URL('../vercel.json', import.meta.url), 'utf8');
+  const netlify = await readFile(new URL('../netlify.toml', import.meta.url), 'utf8');
+  assert.ok(vercel.includes('/founder'));
+  assert.ok(netlify.includes('/founder'));
+});
