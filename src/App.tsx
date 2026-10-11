@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ArrowDownRight, ArrowRight, BookOpen, CheckCircle2, Compass, Database, Globe2, Menu, Search, ShieldCheck, X } from 'lucide-react';
 import { isSupabaseConfigured, supabase, type Country, type PublishedFact } from './lib/supabase';
+import FounderPortal from './FounderPortal';
 
 const regions = ['All regions', 'Africa', 'Asia', 'Europe', 'North America', 'South America', 'Oceania'];
 
@@ -13,6 +14,7 @@ export default function App() {
   const [loading, setLoading] = useState(isSupabaseConfigured);
   const [error, setError] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
+  const isFounderRoute = window.location.pathname.startsWith('/founder');
 
   useEffect(() => {
     let alive = true;
@@ -38,13 +40,15 @@ export default function App() {
     return matchesSearch && matchesRegion;
   }), [countries, search, region]);
 
+  if (isFounderRoute) return <FounderPortal />;
+
   return <div className="app-shell">
     <header className="topbar">
       <a className="brand" href="#home" aria-label="World Revealed Fact home"><span className="brand-mark"><Globe2 size={23}/></span><span><strong>WRF</strong><small>WORLD REVEALED FACT</small></span></a>
       <nav className={menuOpen ? 'nav-links open' : 'nav-links'} aria-label="Main navigation">
         <a href="#explore" onClick={() => setMenuOpen(false)}>Explore</a><a href="#principles" onClick={() => setMenuOpen(false)}>Our standard</a><a href="#compare" onClick={() => setMenuOpen(false)}>Compare</a><a href="#map" onClick={() => setMenuOpen(false)}>Map</a><a href="#data" onClick={() => setMenuOpen(false)}>Data</a><a href="#sources" onClick={() => setMenuOpen(false)}>Sources</a>
       </nav>
-      <a className="nav-cta" href="#explore">Explore atlas <ArrowRight size={16}/></a>
+      <a className="nav-cta" href="/founder">Founder portal <ArrowRight size={16}/></a>
       <button className="menu-toggle" aria-label={menuOpen ? 'Close menu' : 'Open menu'} onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X/> : <Menu/>}</button>
     </header>
     <main>
@@ -73,6 +77,6 @@ export default function App() {
       <section className="source-section section-wrap" id="sources"><div className="source-banner"><div className="source-emblem"><ShieldCheck size={27}/></div><div><span className="kicker">OUR PROMISE</span><h2>No source, no verified fact.</h2><p>WRF distinguishes evidence from assumptions. Published information should be reviewable, dated, and linked to its origin.</p></div><a href="#principles" aria-label="Learn about our standard"><ArrowRight size={20}/></a></div></section>
     </main>
     {selectedCountry && <div className="modal-backdrop" role="presentation" onClick={(event) => { if (event.target === event.currentTarget) setSelectedCountry(null); }}><section className="country-detail-modal" role="dialog" aria-modal="true" aria-labelledby="country-detail-title"><button className="modal-close" onClick={() => setSelectedCountry(null)} aria-label="Close country details"><X size={20}/></button><span className="kicker">COUNTRY PROFILE · {selectedCountry.iso3}</span><h2 id="country-detail-title">{selectedCountry.name}</h2><div className="country-facts-meta"><div><span>Capital</span><strong>{selectedCountry.capital || 'Not recorded'}</strong></div><div><span>Continent</span><strong>{selectedCountry.continent || 'Not recorded'}</strong></div></div><div className="detail-divider"/><h3>Published, sourced facts</h3>{publishedFacts.filter((fact) => fact.wrf_countries?.iso3 === selectedCountry.iso3).length ? <div className="published-facts-list">{publishedFacts.filter((fact) => fact.wrf_countries?.iso3 === selectedCountry.iso3).map((fact) => <article className="published-fact" key={fact.id}><div><h4>{fact.wrf_indicators?.name || 'Indicator'}</h4><p>Reference year: {fact.reference_year}</p></div><strong>{fact.numeric_value !== null ? `${fact.numeric_value.toLocaleString()}${fact.wrf_indicators?.unit ? ` ${fact.wrf_indicators.unit}` : ''}` : fact.text_value}</strong><a href={fact.evidence_url} target="_blank" rel="noreferrer">View evidence <ArrowRight size={14}/></a></article>)}</div> : <div className="detail-empty"><ShieldCheck size={20}/><p>No published indicator values are available for this country yet. WRF only displays facts that passed review and have a traceable evidence link.</p></div>}<button className="button-primary modal-done" onClick={() => setSelectedCountry(null)}>Done <CheckCircle2 size={16}/></button></section></div>}
-    <footer className="footer"><a className="brand footer-brand" href="#home"><span className="brand-mark"><Globe2 size={20}/></span><span><strong>WRF</strong><small>WORLD REVEALED FACT</small></span></a><span>Reveal the World. Verify the Facts.</span><span>Evidence first · Always</span></footer>
+    <footer className="footer"><a className="brand footer-brand" href="#home"><span className="brand-mark"><Globe2 size={20}/></span><span><strong>WRF</strong><small>WORLD REVEALED FACT</small></span></a><span>Reveal the World. Verify the Facts.</span><span>Evidence first · Always</span><a href="/founder">Founder portal</a></footer>
   </div>;
 }
