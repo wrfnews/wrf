@@ -73,3 +73,29 @@ test('first Founder bootstrap is manual and cannot promote the first signup auto
   assert.ok(bootstrap.includes('founder.bootstrap_completed'));
   assert.ok(!bootstrap.toLowerCase().includes('on_auth_user_created'));
 });
+
+const founder = await readFile(new URL('../src/FounderPortal.tsx', import.meta.url), 'utf8');
+
+test('Founder portal uses existing authentication and database roles, never public signup promotion', () => {
+  assert.ok(founder.includes('supabase.auth.signInWithPassword'));
+  assert.ok(founder.includes("from('wrf_user_roles').select('role')"));
+  assert.ok(founder.includes("['founder', 'admin', 'reviewer'].includes(foundRole)"));
+  assert.ok(!founder.includes('signUp('));
+  assert.ok(!founder.includes("role: 'founder'"));
+  assert.ok(founder.includes('signing up never grants Founder privileges'));
+});
+
+test('Founder dashboard review actions use the protected review RPC and keep audit data role-scoped', () => {
+  assert.ok(founder.includes("supabase.rpc('wrf_review_value'"));
+  assert.ok(founder.includes("role === 'founder' || role === 'admin'"));
+  assert.ok(founder.includes("from('wrf_audit_log')"));
+  assert.ok(founder.includes('This value cannot be published until its source has been approved.'));
+  assert.ok(founder.includes('Request evidence'));
+});
+
+test('Founder dashboard reports missing configuration honestly and does not fabricate operational metrics', () => {
+  assert.ok(founder.includes('Database not configured'));
+  assert.ok(founder.includes('Not configured'));
+  assert.ok(founder.includes('metrics.countries === null ? \'Unavailable\''));
+  assert.ok(founder.includes('provider routing, repository analysis, sandboxed builds, and deployment approval are not connected yet.'));
+});
